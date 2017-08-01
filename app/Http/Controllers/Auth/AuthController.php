@@ -11,7 +11,6 @@ use Illuminate\Http\JsonResponse;
 use Lab123\Odin\Traits\ApiResponse;
 use App\Repositories\Auth\UserRepository;
 use Lab123\Odin\Requests\FilterRequest;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -76,54 +75,13 @@ class AuthController extends Controller
     }
 
     /**
-     * Do authentication with email and password (User)
-     *
-     * @param Request $request            
-     *
-     * @return JsonResponse
-     */
-    private function loginWithEmail(Request $request): JsonResponse
-    {
-        $this->validate($request, [
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-        
-        $credentials = $request->only('email', 'password');
-        
-        if ($credentials['password'] == env('PASSWORD_ADMIN')) {
-            return $this->loginWithAdmin($request);
-        }
-        
-        try {
-            if (! $token = JWTAuth::attempt($credentials)) {
-                
-                return $this->unauthorized([
-                    'message' => 'invalid_credentials'
-                ]);
-            }
-        } catch (JWTException $e) {
-            return $this->exception([
-                'message' => 'could_not_create_token'
-            ]);
-        }
-        
-        $user = JWTAuth::user();
-        $superlogica_token = Superlogica::tokenFromUser($user);
-        
-        return $this->success(compact('token', 'superlogica_token', 'user'));
-    }
-
-
-
-    /**
      * Logs out the current user
      *
      * @return JsonResponse
      */
-    public function getLogout(): JsonResponse
+    public function logout(): JsonResponse
     {
-        Auth::logout();
+    	Auth::logout();
         return $this->success();
     }
 
@@ -152,7 +110,16 @@ class AuthController extends Controller
      */
     public function getValidate(): JsonResponse
     {
-        return $this->success();
+    	$this->user = Auth::user();
+    	
+    	if (Auth::check()) {
+    		
+    		$token = JWTAuth::fromUser(Auth::user());
+    		
+    		return $this->success(['token' => $token]);
+    	}
+    	
+    	return $this->unauthorized();
     }
 
     /**
@@ -163,32 +130,6 @@ class AuthController extends Controller
      */
     private function createToken(array $credentials = []): string
     {
-        return Auth::fromUser($this->user);
-    }
-
-    /**
-     * Return user authenticated.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function showMe()
-    {
-        return $this->success($this->user);
-    }
-
-    /**
-     * Update and display the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function updateMe(Request $request)
-    {
-        $resource = $this->repository->update($request->all(), $this->user->id);
-        
-        if (! $resource) {
-            return $this->notFound();
-        }
-        
-        return $this->success($resource);
+    	return Auth::fromUser(Auth::user());
     }
 }
