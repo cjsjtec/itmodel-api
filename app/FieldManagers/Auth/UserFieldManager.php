@@ -39,6 +39,7 @@ class UserFieldManager extends FieldManager
         'cellphone' => [
             'rules' => 'min:11|max:15'
         ],
+    	'picture_url' => []	
     ];
 
     public function store()

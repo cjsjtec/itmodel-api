@@ -1,11 +1,8 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthController;
-
 Route::post('auth/login',[
-	'uses' => 'Auth\AuthController@postLogin'
+		'uses' => 'Auth\AuthController@postLogin'
 ]);
-
 Route::group(['prefix' => 'auth',  'middleware' => 'jwt.auth'], function()
 {
 	Route::post('logout', [

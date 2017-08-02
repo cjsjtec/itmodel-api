@@ -51,7 +51,9 @@ class User extends Entity implements AuthenticatableContract, AuthorizableContra
      *
      * @var array
      */
-    protected $appends = [];
+    protected $appends = [
+    	'picture_url'
+    ];
     
     /**
      * Class Fields Manage.
@@ -92,5 +94,36 @@ class User extends Entity implements AuthenticatableContract, AuthorizableContra
     public function getJWTCustomClaims()
     {
     	return [];
+    }
+    
+    /**
+     * @param UploadedFile|string $image
+     */
+    public function setPictureAttribute($picture)
+    {
+    	if (is_string($picture) || is_null($picture) ) {
+    		$this->attributes['picture'] = $picture;
+    		return;
+    	}
+    	
+    	$this->attributes['picture'] = (new ImageProfile())->updateOrCreate(
+    			$this->picture,
+    			$picture,
+    			'thumb-'.uniqid()
+    			);
+    }
+    
+    /**
+     * Get full url for picture
+     *
+     * @return boolean
+     */
+    public function getPictureUrlAttribute()
+    {
+    	if (!$this->picture) {
+    		return env('DEFAULT_PROFILE_PICTURE');
+    	}
+    	
+    	return config('filesystems.urls.profile-url') . "/{$this->picture}";
     }
 }

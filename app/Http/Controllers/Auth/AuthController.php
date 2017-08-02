@@ -114,9 +114,9 @@ class AuthController extends Controller
     	
     	if (Auth::check()) {
     		
-    		$token = JWTAuth::fromUser(Auth::user());
+    		$token = JWTAuth::fromUser($this->user);
     		
-    		return $this->success(['token' => $token]);
+    		return $this->success(['token' => $token, 'user' => $this->user]);
     	}
     	
     	return $this->unauthorized();
