@@ -26,6 +26,16 @@ class Product extends Entity
 	];
 	
 	/**
+	 * The accessors to append to the model's array form.
+	 *
+	 * @var array
+	 */
+	protected $appends = [
+			'picture_url'
+	];
+	
+	
+	/**
 	 * Class Fields Manage.
 	 *
 	 * @var $fieldManager
@@ -53,5 +63,19 @@ class Product extends Entity
 			$picture,
 			uniqid()
 		);
+	}
+	
+	/**
+	 * Get full url for picture
+	 *
+	 * @return boolean
+	 */
+	public function getPictureUrlAttribute()
+	{
+		if (!$this->picture) {
+			return env('DEFAULT_PROFILE_PICTURE');
+		}
+		
+		return config('filesystems.urls.profile-url') . "/{$this->picture}";
 	}
 }

@@ -66,6 +66,6 @@ return [
     ],
 		
 	'urls' => [
-			'profile-url' => env('S3_URL') . '/' .env('S3_BUCKET') .'/itmodel',
+			'profile-url' => env('S3_URL') . '/' .env('S3_BUCKET') ,
 	]
 ];

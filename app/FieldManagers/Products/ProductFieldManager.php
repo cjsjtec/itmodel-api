@@ -23,8 +23,9 @@ class ProductFieldManager extends FieldManager
         ],
 		
     	'picture' => [
-    		'rules' => 'image|mimes:jpg,png'
-    	]	
+    		'rules' => 'image|mimes:jpg,png,jpeg'
+    	],
+    	'picture_url' => []
     ];
     
     public function store()

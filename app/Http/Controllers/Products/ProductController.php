@@ -48,4 +48,25 @@ class ProductController extends Controller
 
 		return $this->created($product->load('categories'));
 	}
+	
+	/**
+	 * Update and display the resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update(FilterRequest $request, $id)
+	{
+		$this->fieldManager = $this->getFieldManager();
+		$this->validate($request->request, $this->fieldManager->update());
+		
+		$id = $this->getRealId($id);
+		
+		$product = $this->repository->update($request->all(), $id);
+		
+		$categories = $request->input('categories');
+		
+		$product->categories()->sync($categories);
+		
+		return $this->success($product);
+	}
 }
